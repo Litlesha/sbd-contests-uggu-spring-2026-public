@@ -1,12 +1,6 @@
 # Процесс сертификации АБУ (прототип, пример `src_starting_point`)
 
-## Когда читать
-
-- **Обязательно:** по необходимости.
-- **Когда:** если возникают ошибки на шагах `make prepare-cert-bundle*` и `make certify-abu*`.
-- **Можно пропустить:** да, для первого прохода достаточно `quickstart_2days.md`.
-
-Итоговая оценка работы по критериям C01--C25 (сумма raw) описана в [contest_regulations.md](contest_regulations.md) и считается скриптом `scripts/evaluate_contest_score.py` (часть критериев — экспертно).
+Итоговая оценка работы по критериям C01--C22 и шкала 10--20 описаны в [contest_regulations.md](contest_regulations.md) и считаются скриптом `scripts/evaluate_contest_score.py` (часть критериев — экспертно).
 
 ## Предусловия
 
@@ -16,11 +10,7 @@
 
 ## Шаг 1. Подготовка сертификационного пакета
 
-Перед копированием вызывается **генерация** SBOM из манифеста [`src_starting_point/sbom/sbom_manifest.json`](../src_starting_point/sbom/sbom_manifest.json) (см. [sbom_guide.md](sbom_guide.md)). Поля **междоменных потоков** (`domain_ipc_*_boundary_edges`), а также при необходимости **`cost_domains_schema_version`**, **`security_cost_domains`**, **`ipc_policies_bundle_path`**, если заданы в манифесте SBOM на корне, подмешиваются скриптом [`write_cert_bundle_manifest.py`](../scripts/write_cert_bundle_manifest.py) в итоговый `cert_bundle/manifest.json`. Целевые CycloneDX лежат в **`src_starting_point/sbom/`** и копируются в **`cert_bundle/sbom/`** вместе с агрегатом `abu_sbom.cdx.json` как `sbom.cdx.json`. Затем скрипт копирует дерево `src_starting_point` в **`cert_bundle/source/`** (в том числе те же файлы внутри `source/sbom/`), примеры **SGA** (`docs/examples/sga.json` → `cert_bundle/security/sga.json`), и формирует `manifest.json`, затем создаёт архив `artifacts/abu_certification_bundle.tar.gz`.
-
-Для **решения** (`prepare_certification_bundle_solution.sh`): при наличии `src_solution/requirements-other.txt` он кладётся в поставку; Регулятор устанавливает его **после** основного `requirements.txt` без учёта «тяжёлых» пакетов из этого файла в проверке ДВБ. В эталонное дерево входит единый файл политик IPC в каталоге `src_solution/abu/tcb/sys/` (копируется вместе с `abu/tcb`); референсный формат и смысл — в **[`references/secure_ipc/README.md`](../references/secure_ipc/README.md)** и JSON-схемах в [`schemas/`](schemas/).
-
-Типичный цикл участника: развивать код от **[`src_starting_point/`](../src_starting_point/)** по референсам **`references/`**, не копируя текст эталона; итог — решение в каталоге `src_solution/` в репозитории участника.
+Перед копированием вызывается **генерация** SBOM из манифеста [sbom_manifest.json](sbom_manifest.json) в `docs/examples/` (см. [sbom_guide.md](sbom_guide.md)). Затем скрипт копирует `src_starting_point`, примеры **SGA** (`docs/examples/sga.json` → `cert_bundle/security/sga.json`), раздельные CycloneDX **SBOM_TCB** и **SBOM_OTHER**, агрегированный `sbom/sbom.cdx.json` для совместимости, и формирует `manifest.json`, затем создаёт архив `artifacts/abu_certification_bundle.tar.gz`.
 
 ```bash
 make prepare-cert-bundle
@@ -85,12 +75,6 @@ make tests-all
 Сертификат (SHA-256 пакета): abcd1234...ef
 ```
 
-Точные числа зависят от размера SBOM, **метрик исходников ДВБ** (`tcb_lines_of_code`, `tcb_cyclomatic_sum`) и результатов `pytest`. Сумму строк и цикломатику Регулятор считает по дереву **`abu/tcb`**, **если** одновременно присутствуют каталоги **`abu/tcb`** и **`abu/other`** иначе для целей сертификации весь код **`abu/**/*.py`** считается частью ДВБ (нет структурной изоляции «доверенное / недоверенное» в дереве). Эти величины входят в расчёт `estimated_cost`. В ответе API указываются **покрытие TOTAL** (`coverage_percent`), раздельно **`coverage_tcb_percent`** и **`coverage_other_percent`** при наличии **`abu/tcb`** и **`abu/other`**; если разделения нет, покрытие считается по всему `abu` и отражается в **`coverage_tcb_percent`**, **`coverage_other_percent`** = 100% (см. модуль `regulator.sandbox`). Отдельно — **покрытие тестами безопасности** (`security_coverage_percent`). Сертификат **не выдаётся**, если после успешного прогона тестов покрытие ДВБ (`coverage_tcb_percent`) ниже порога **40%** (переопределение: переменная окружения `REGULATOR_TCB_COV_REQUIRED`). SGA пакета доступен по `GET /api/v1/certificates/{certificate_id}/sga` после успешной выдачи сертификата.
+Точные числа зависят от размера SBOM, **метрик исходников ДВБ** (число строк `*.py` в пакете `abu` --- `tcb_lines_of_code`, сумма цикломатических сложностей функций --- `tcb_cyclomatic_sum`) и результатов `pytest`. Эти величины входят в расчёт `estimated_cost` (см. [docs/bundle/sections/03-certification.tex](bundle/sections/03-certification.tex) в PDF-пакете). В ответе также указываются покрытие кода и **покрытие тестами безопасности** (`security_coverage_percent`). SGA пакета доступен по `GET /api/v1/certificates/{certificate_id}/sga` после успешной выдачи сертификата.
 
 Оценка решения по регламенту: `make evaluate-score` ([contest_regulations.md](contest_regulations.md), [templates/evaluation_report.md](templates/evaluation_report.md)).
-
-## Что читать дальше
-
-- [sbom_guide.md](sbom_guide.md) — если нужно уточнить разделение SBOM и влияние на стоимость.
-- [contest_regulations.md](contest_regulations.md) — как результат сертификации влияет на баллы.
-- [quickstart_2days.md](quickstart_2days.md) — чтобы вернуться к практическому маршруту.

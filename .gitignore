@@ -22,9 +22,3 @@ dist/
 
 # Локальные журналы АБУ (abu/event_log)
 var/
-
-*.tmp
-.tmp_eval
-
-evaluation/*
-.eval_runtime_dbg

@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_generate_sbom_cyclonedx_structure_and_metrics(tmp_path: Path) -> None:
     """Сгенерированные файлы — CycloneDX; метрики совпадают с ожиданиями манифеста."""
-    manifest = ROOT / "src_starting_point" / "sbom" / "sbom_manifest.json"
+    manifest = ROOT / "docs" / "sbom_manifest.json"
     out_tcb = tmp_path / "SBOM_TCB.cdx.json"
     out_other = tmp_path / "SBOM_OTHER.cdx.json"
     subprocess.run(
@@ -52,7 +52,7 @@ def test_generate_sbom_cost_formula_matches_split(tmp_path: Path) -> None:
     from regulator.cost_model import estimate_other_sbom_cost, estimate_tcb_sbom_cost, total_estimated_cost
     from regulator.sbom_parse import count_sbom_metrics
 
-    manifest = ROOT / "src_starting_point" / "sbom" / "sbom_manifest.json"
+    manifest = ROOT / "docs" / "sbom_manifest.json"
     out_tcb = tmp_path / "tcb.cdx.json"
     out_other = tmp_path / "oth.cdx.json"
     subprocess.run(

@@ -2,8 +2,7 @@
 """
 Генерация SBOM_TCB.cdx.json и SBOM_OTHER.cdx.json (CycloneDX 1.5) из манифеста JSON.
 
-По умолчанию: src_starting_point/sbom/sbom_manifest.json → SBOM_TCB.cdx.json, SBOM_OTHER.cdx.json
-  в том же каталоге (заготовка для пакета сертификации).
+По умолчанию: docs/sbom_manifest.json → docs/examples/SBOM_TCB.cdx.json, SBOM_OTHER.cdx.json
 """
 
 from __future__ import annotations
@@ -87,23 +86,22 @@ def generate(
 def main() -> None:
     root = _root()
     parser = argparse.ArgumentParser(description="Генерация CycloneDX SBOM_TCB и SBOM_OTHER из манифеста.")
-    sp_sbom = root / "src_starting_point" / "sbom"
     parser.add_argument(
         "--manifest",
         type=Path,
-        default=sp_sbom / "sbom_manifest.json",
-        help="Путь к sbom_manifest.json (заготовка: src_starting_point/sbom/)",
+        default=root / "docs" / "sbom_manifest.json",
+        help="Путь к sbom_manifest.json",
     )
     parser.add_argument(
         "--out-tcb",
         type=Path,
-        default=sp_sbom / "SBOM_TCB.cdx.json",
+        default=root / "docs" / "examples" / "SBOM_TCB.cdx.json",
         help="Выход SBOM_TCB.cdx.json",
     )
     parser.add_argument(
         "--out-other",
         type=Path,
-        default=sp_sbom / "SBOM_OTHER.cdx.json",
+        default=root / "docs" / "examples" / "SBOM_OTHER.cdx.json",
         help="Выход SBOM_OTHER.cdx.json",
     )
     args = parser.parse_args()

@@ -2,35 +2,20 @@
 skinparam rectangle {
   BackgroundColor #fff8e8
 }
-title АБУ v1 (с разделением ДВБ / недоверенный код)
+title АБУ v1 (намеренно без границы ДВБ / недоверенный код)
 
-rectangle "ДВБ (Trusted Computing Base)" as TCB {
-  [Security Monitor] as MONITOR
-  [Policies] as POLICIES
-  [Event Log] as LOG
-  [Safety Checks] as SAFETY
+rectangle "Процесс_AБУ" {
+  [FastAPI] as API
+  [Исполнитель_миссии] as EX
+  [ПсевдоИИ\nаномалия_режим_риск] as AI
+  [Проверки_безопасности\n(должны_в_ДВБ_на_этапе_2)] as SAFETY
 }
 
-rectangle "Недоверенный код (Other)" as OTHER {
-  [FastAPI API] as API
-  [Numpy Workflow] as NUMPY
-  [Pseudo AI] as AI
-}
-
-API --> MONITOR
-NUMPY --> MONITOR
-AI --> MONITOR
-MONITOR --> POLICIES
-MONITOR --> LOG
-MONITOR --> SAFETY
-
-note right of TCB
-  ДВБ: src_solution/abu/tcb/
-  Контроль доменов, политики безопасности
-end note
-
-note right of OTHER
-  Other: src_solution/abu/other/
-  API, вычисления, ИИ
+API -down-> EX
+EX -down-> AI
+EX -down-> SAFETY
+note right of AI
+  В v1 всё в одном коде;
+  конкурсанты разделяют ДВБ
 end note
 @enduml

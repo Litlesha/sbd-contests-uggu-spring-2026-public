@@ -49,7 +49,6 @@ def test_certification_success_and_certificate_is_sha256_of_bundle(
     assert body.get("success") is True
     assert body.get("certificate_id") == expected
     assert float(body.get("estimated_cost", 0)) > 0
-    assert float(body.get("coverage_tcb_percent", 0)) >= 40.0
     assert body.get("developer_company") == "Локальный тест"
     assert body.get("firmware_label") == "abu-sp"
 

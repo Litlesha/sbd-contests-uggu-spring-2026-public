@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sys
 from pathlib import Path
 
@@ -17,24 +18,31 @@ def main() -> None:
     bundle = root / "artifacts" / "abu_certification_bundle.tar.gz"
     if not bundle.is_file():
         print(
-            "Сначала выполните: make prepare-cert-bundle или "
-            "make prepare-cert-bundle-solution",
+            "Сначала выполните: make prepare-cert-bundle",
             file=sys.stderr,
         )
         sys.exit(1)
 
+    sys.path.insert(0, str(root / "external_systems" / "regulator"))
+    from fastapi.testclient import TestClient
+    from regulator.main import app
+
     expected_hash = hashlib.sha256(bundle.read_bytes()).hexdigest()
-
-    sys.path.insert(0, str(root / "scripts"))
-    from regulator_certification import request_certification
-
-    data = request_certification(root)
-
+    client = TestClient(app)
+    dev = os.environ.get("CERT_DEVELOPER_COMPANY", "Локальная разработка")
+    resp = client.post(
+        "/api/v1/certification/requests",
+        json={
+            "bundle_path": str(bundle.resolve()),
+            "developer_company": dev,
+        },
+    )
+    data = resp.json()
     success = data.get("success", False)
-    cost = float(data.get("estimated_cost", 0.0) or 0.0)
+    cost = data.get("estimated_cost", 0.0)
     cert = data.get("certificate_id")
-    loc = int(data.get("tcb_lines_of_code", 0) or 0)
-    cc = int(data.get("tcb_cyclomatic_sum", 0) or 0)
+    loc = data.get("tcb_lines_of_code", 0)
+    cc = data.get("tcb_cyclomatic_sum", 0)
 
     if success:
         print("Результат сертификации: успешно")

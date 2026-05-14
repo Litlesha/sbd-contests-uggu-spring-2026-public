@@ -1,24 +1,31 @@
-# Документация репозитория
+# Документация репозитория (индекс)
 
-## Обязательный маршрут (3 документа)
+**Редакция пакета документов: 1.7.7.** Начните с одного линейного маршрута, затем углубляйтесь по ссылкам.
 
-1. [contest_task.md](contest_task.md) — задание и требования к сдаче.
-2. [quickstart_2days.md](quickstart_2days.md) — практический маршрут на 2 дня.
-3. [criteria_rubric.md](criteria_rubric.md) — расшифровка критериев C01–C25.
+## Маршрут чтения (6 шагов)
 
-## По необходимости (углубление)
+1. **[contest_task.md](contest_task.md)** — задание, user story, что сдавать.  
+2. **[contest_regulations.md](contest_regulations.md)** — критерии C01–C22, уровни 0–3, сдача.  
+3. **[context.md](context.md)** — предметная область (ЦР, АБУ, сертификация).  
+4. **[architecture.md](architecture.md)** — архитектура и ДВБ.  
+5. **[quality_requirements.md](quality_requirements.md)** — окружение Python, тесты, git.  
+6. **[certification_process.md](certification_process.md)** — шаги сертификации и команды.
 
-- [contest_regulations.md](contest_regulations.md) — полный регламент и tie-break.
-- [certification_process.md](certification_process.md) — детальная процедура сертификации.
-- [sbom_guide.md](sbom_guide.md) — тонкости SBOM и манифеста.
-- [architecture.md](architecture.md), [context.md](context.md) — архитектура и предметная область.
-- [tara_abu.md](tara_abu.md) — модель угроз.
-- [security_tests.md](security_tests.md) — справочная таблица SG и тестов.
-- [faq_participant.md](faq_participant.md) — ответы на частые вопросы участника.
-- [traffic_light_demo.md](traffic_light_demo.md) — краткое руководство по примеру `references/traffic_light_demo`.
+## Мини-оглавление по критериям
 
-## Сдача и проверка
+Полная расшифровка уровней **0–3** и путей к файлам: **[criteria_rubric.md](criteria_rubric.md)** (якоря `#c01` … `#c22`).
 
-- Оценка: `make evaluate-score`.
-- Сертификация решения: `make certify-abu-solution`.
-- Отчёт участника: `src_solution/docs/solution.md`.
+## Оценка и отчёт
+
+- Скрипт баллов: [scripts/evaluate_contest_score.py](../scripts/evaluate_contest_score.py), команда `make evaluate-score`.  
+- Отчёт участника: [solution.md](solution.md).  
+- Шаблон таблицы баллов: [templates/evaluation_report.md](templates/evaluation_report.md).
+
+## Прочее
+
+| Тема | Документ |
+|------|----------|
+| SBOM, CycloneDX | [sbom_guide.md](sbom_guide.md) |
+| Тесты безопасности vs SG | [security_tests.md](security_tests.md) |
+| TARA | [tara_abu.md](tara_abu.md) |
+| Сборка PDF (LaTeX) | [bundle/README.md](bundle/README.md) |

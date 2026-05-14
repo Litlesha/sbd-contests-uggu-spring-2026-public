@@ -1,6 +1,6 @@
 # Пример таблицы баллов (калибровка репозитория)
 
-Заполнено по выводу `scripts/evaluate_contest_score.py` (`make evaluate-score`). Отчёт по **C17** — файл в каталоге `src_solution/docs/`. Шаблон-форма таблицы: [evaluation_report.md](evaluation_report.md).
+Заполнено по выводу `scripts/evaluate_contest_score.py` (`make evaluate-score`). Текстовый отчёт участника по **C17** — файл [`../solution.md`](../solution.md). Шаблон-форма таблицы: [evaluation_report.md](evaluation_report.md).
 
 **Участник / команда:** прототип репозитория организаторов  
 **Коммит / тег:** _см. фактический коммит в репозитории_  
@@ -23,45 +23,44 @@
 Сертификат (SHA-256 пакета): <64 hex>
 ```
 
-Полный JSON ответа: `success`, `estimated_cost`, `certificate_id`, `security_coverage_percent`, `tcb_lines_of_code`, `tcb_cyclomatic_sum`, снимок `sga`. Отчёт участника по **C17** — в каталоге `src_solution/docs/`.
+Полный JSON ответа: `success`, `estimated_cost`, `certificate_id`, `security_coverage_percent`, `tcb_lines_of_code`, `tcb_cyclomatic_sum`, снимок `sga`.
 
-## 3. Баллы по 25 критериям (макс. 3 за критерий)
+## 3. Баллы по 22 критериям (макс. 3 за критерий)
 
 Источник имён и логики: `scripts/evaluate_contest_score.py` (команда `make evaluate-score`).
 
 | № | Критерий | Баллы (0–3) |
 |---|----------|-------------|
 | 1 | C01: Все тесты репозитория (включая тесты решения) завершаются успешно | 3.0 |
-| 2 | C02: Все тесты решения находятся в src_solution/tests/** | 3.0 |
+| 2 | C02: Наличие тестов безопасности (tests/security/ или src_starting_point/tests/security/) | 3.0 |
 | 3 | C03: Маркер security в pytest.ini и использование в тестах | 3.0 |
 | 4 | C04: Покрытие тестами event_log / журнал | 1.0 |
 | 5 | C05: Пример sga.json | 3.0 |
 | 6 | C06: SBOM TCB / OTHER в примерах | 3.0 |
-| 7 | C07: Успешная сертификация решения (пакет + ответ Регулятора) | 3.0 |
+| 7 | C07: Скрипт prepare_certification_bundle.sh | 3.0 |
 | 8 | C08: Сквозной автотест ЦР–АБУ | 3.0 |
 | 9 | C09: Оформление кода в src_solution (flake8, PEP8) | 3.0 |
 | 10 | C10: Решение: event_log в src_solution | 1.0 |
-| 11 | C11: Решение: зависимости в src_solution (тяжёлые в ДВБ → 0; вынос в requirements-other.txt при пустом requirements.txt → 3) | 0.0 |
+| 11 | C11: Решение: зависимости в src_solution | 0.0 |
 | 12 | C12: Тесты репозитория импортируют src_solution (AST) | 1.0 |
-| 13 | C13: Раздел тестов безопасности в src_solution/docs/solution.md | 2.0 |
+| 13 | C13: docs/security_tests.md привязан к решению | 2.0 |
 | 14 | C14: numpy в SBOM решения (TCB vs OTHER) | 2.0 |
 | 15 | C15: Тесты: event_log и src_solution (импорты) | 0.0 |
 | 16 | C16: Покрытие src_solution/abu/tcb тестами | 3.0 |
-| 17 | C17: Отчёт `src_solution/docs/solution.md` | 3.0 |
+| 17 | C17: Отчёт docs/solution.md | 3.0 |
 | 18 | C18: security_monitor, policies в src_solution; тесты политик | 0.0 |
-| 19 | C19: изоляция доменов процессами; монитор запросов/ответов | 0.0 |
+| 19 | C19: изоляция доменов; монитор запросов/ответов | 0.0 |
 | 20 | C20: Стоимость сертификации — рейтинг (жюри) | 0.0 |
 | 21 | C21: Экспертно — соответствие политик архитектуре АБУ (жюри) | 0.0 |
 | 22 | C22: Экспертно — полнота отчёта и воспроизводимость (жюри) | 0.0 |
-| 23 | C23: Размер доменов ДВБ (максимальный LOC одного домена) | 0.0 |
-| 24 | C24: Количество интерфейсов домена ДВБ | 0.0 |
-| 25 | C25: monitor, security-тесты и покрытие monitor-кода | 0.0 |
 
-**Сумма (raw):** 37.0 / 75
+**Сумма (raw):** 37.0 / 66  
+
+**Итоговая шкала 10–20 (нормализация `10 + (raw/66)×10`):** **15.61**
 
 *Примечание:* C20–C22 заполняет жюри вручную (в автоматике 0).
 
-## 4. Разрешение равенства баллов
+## 4. Tie-break (при равенстве итога)
 
 См. [contest_regulations.md](../contest_regulations.md).
 
