@@ -1,65 +1,77 @@
-# Отчёт о конкурсном решении (шаблон)
+# Solution Report
 
-Заполните этот файл в каталоге `docs/solution.md` в своём репозитории. По критерию **C17** в отчёте должны быть отражены разделы ниже (архитектура, политики безопасности, результаты сквозных и security-тестов, сертификация, архитектурные диаграммы или ссылки на них).
+## Architecture
 
-Структура кода: каталоги `src_solution/abu/tcb` (ДВБ) и `src_solution/abu/other`; декларации зависимостей — `src_solution/sbom/SBOM_TCB.cdx.json` и `SBOM_OTHER.cdx.json`.
+The solution creates a separated ABU implementation under `src_solution/`.
+Trusted code is placed in `src_solution/abu/tcb`; non-trusted advisory logic is
+placed in `src_solution/abu/other`.
 
-**Участник / команда:** _указать_  
-**Коммит / тег:** _указать_  
-**Дата:** _указать_
+```mermaid
+flowchart LR
+    DM[Digital Mine] -->|mission request| MON[security_monitor]
+    AI[abu/other pseudo AI] -->|advice only| MON
+    TEL[Telemetry] -->|state| MON
+    MON -->|allowed command| CTRL[Control domain]
+    MON --> LOG[event_log]
+    MON --> POL[policies]
+```
 
----
+The TCB contains only deterministic standard-library code:
+`event_log.py`, `policies.py`, `domains.py`, and `security_monitor.py`.
+`numpy` is intentionally isolated in `src_solution/abu/other/pseudo_ai.py` and
+appears only in `src_solution/sbom/SBOM_OTHER.cdx.json`.
 
-## 1. Архитектура решения
+## Policies And Domains
 
-Опишите структуру кода в `src_solution/`: модули, границы доверенной базы (ДВБ), взаимодействие с заготовкой `src_starting_point/abu`, монитор безопасности и политики (если применимо).
+The security monitor is the only allowed mediator for inter-domain requests and
+responses. `DomainMessage` records source, target, action, and payload.
+`ALLOWED_FLOWS` permits Digital Mine to TCB requests, TCB to Control commands,
+Telemetry or advisory AI to TCB inputs, and TCB responses back to the Digital
+Mine. A direct `AI_OTHER -> CONTROL` request is denied.
 
-_Заполнение:_
+Mission policy checks certificate presence, emergency stop state, drilling depth,
+and azimuth bounds. Every accepted or denied mission is written to `event_log`.
 
----
+## Security Tests
 
-## 2. Политики безопасности и цели (ЦПБ)
+Security tests are documented in `docs/security_tests.md` and implemented in:
 
-Как реализованы политики безопасности, соответствие заявленным целям и предположениям (SGA), связь с тестами.
+- `tests/security/test_solution_policies.py`
+- `tests/security/test_solution_security_monitor.py`
+- `tests/test_solution_event_log.py`
+- `tests/test_solution_tcb_policy.py`
 
-_Заполнение:_
+These tests import `src_solution`, exercise `event_log`, and cover the TCB
+modules used for policy decisions and monitor-mediated requests.
 
----
+## Certification And SBOM
 
-## 3. Результаты сквозных тестов
+The solution includes separate CycloneDX files:
 
-Укажите команды (например, `make tests-all`), фрагмент вывода, ссылку на сквозной сценарий ЦР–АБУ (`tests/test_e2e_abu_dm_scenario.py` и связанные проверки).
+- `src_solution/sbom/SBOM_TCB.cdx.json`
+- `src_solution/sbom/SBOM_OTHER.cdx.json`
 
-_Заполнение:_
+The TCB SBOM contains only `python-stdlib`. `numpy` and optional API-level
+dependencies are placed in the OTHER SBOM, matching the TCB split and reducing
+certification cost for trusted code.
 
----
+Reproducible commands:
 
-## 4. Результаты тестов безопасности
+```bash
+make install
+make tests-all
+pipenv run pytest -q tests/security tests/test_solution_event_log.py tests/test_solution_tcb_policy.py --cov=src_solution.abu.tcb
+make prepare-cert-bundle
+make certify-abu
+make evaluate-score
+```
 
-Прогон тестов с маркером `security`, покрытие по ЦБ (из лога сертификации или `pytest`), соответствие `docs/security_tests.md`.
+## Evaluation Notes
 
-_Заполнение:_
+The expected automatic evidence for C01-C19 is: solution package under
+`src_solution/`, event log module, dependency manifest, separated SBOM files,
+security tests with `pytest.mark.security`, tests importing `src_solution`, and
+TCB coverage from the repository evaluation command. C20-C22 remain jury-scored:
+the architecture keeps the trusted code small and gives a clear policy-to-test
+trace.
 
----
-
-## 5. Сертификация
-
-Результат `make prepare-cert-bundle` / `make certify-abu` или API Регулятора: успех, `estimated_cost`, `certificate_id`, фрагмент лога.
-
-_Заполнение:_
-
----
-
-## 6. Архитектурные диаграммы
-
-Вставьте диаграммы (или ссылки на файлы в `docs/diagrams/`, изображения в репозитории).
-
-_Заполнение:_
-
----
-
-## Примечания
-
-Дополнительные комментарии для жюри (воспроизводимость, известные ограничения).
-
-_Заполнение:_

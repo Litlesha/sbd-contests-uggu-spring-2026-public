@@ -1,0 +1,4 @@
+# Trusted code uses only the Python standard library.
+# Non-trusted src_solution/abu/other contains advisory analytics.
+numpy==2.4.3
+fastapi==0.123.8

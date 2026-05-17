@@ -1,12 +1,12 @@
-# Тесты безопасности АБУ и цели (ЦБ)
+# Security Tests
 
-| Цель (SG) | Файлы тестов | Комментарий |
-|-----------|----------------|-------------|
-| SG_ADS_Authorized_critical_commands | [src_starting_point/tests/security/test_sg_authorized_commands.py](../src_starting_point/tests/security/test_sg_authorized_commands.py) | Лимиты глубины/оборотов, доступ к миссии через API |
-| SG_ADS_Controlled_operations | [src_starting_point/tests/security/test_sg_controlled_ops.py](../src_starting_point/tests/security/test_sg_controlled_ops.py) | Риск, аварийный стоп, аномалия |
-| SG_ADS_Security_events_store | [src_starting_point/tests/security/test_sg_security_events.py](../src_starting_point/tests/security/test_sg_security_events.py), test_event_log | Журнал, numpy в ДВБ |
-| Интеграция сценария | [src_starting_point/tests/security/test_app_mission_flow.py](../src_starting_point/tests/security/test_app_mission_flow.py) | Миссия, tick, кольцо событий |
+| Goal | Test | Code under test |
+| --- | --- | --- |
+| SG-01: mission commands require certificates and safe limits | `tests/security/test_solution_policies.py` | `src_solution/abu/tcb/policies.py` |
+| SG-02: untrusted advisory code cannot directly command control | `tests/security/test_solution_security_monitor.py` | `src_solution/abu/tcb/security_monitor.py`, `src_solution/abu/tcb/domains.py` |
+| SG-03: trusted decisions are journaled | `tests/test_solution_event_log.py` | `src_solution/abu/tcb/event_log.py` |
+| SG-04: Digital Mine requests pass only through the monitor | `tests/security/test_solution_security_monitor.py` | `src_solution/abu/tcb/security_monitor.py` |
 
-Регулятор в песочнице выполняет общие тесты (без `tests/security` в первом прогоне) и отдельно **тесты безопасности** с порогом покрытия `REGULATOR_SECURITY_COV_FAIL_UNDER` (по умолчанию 70%).
+The security marker is used by the solution tests so they can be run separately:
+`pytest -m security tests/security`.
 
-Участник конкурса дополняет соответствие тестов и ЦБ для кода в `src_solution/` (см. отчёт `docs/solution.md`).
